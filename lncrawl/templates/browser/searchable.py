@@ -17,9 +17,9 @@ class SearchableBrowserTemplate(GeneralBrowserTemplate, SearchableSoupTemplate):
         return list(self.process_search_results(tags))
 
     def search_novel_in_browser(self, query: str) -> List[SearchResult]:
-        tags = self.select_search_items_in_browser(query)
-        return list(self.process_search_results_in_browser(tags))
-
+        #tags = self.select_search_items_in_browser(query)
+        #return list(self.process_search_results_in_browser(tags))
+        return list([])
     def process_search_results_in_browser(
         self, tags: Generator[Tag, None, None]
     ) -> Generator[Tag, None, None]:
