@@ -4,7 +4,7 @@ from typing import List
 from urllib.parse import parse_qs, urlencode, urlparse
 
 from bs4 import BeautifulSoup, Tag
-
+from ratelimit import limits, sleep_and_retry
 from lncrawl.core.exeptions import LNException
 from lncrawl.models import Chapter, SearchResult
 from lncrawl.templates.soup.chapter_only import ChapterOnlySoupTemplate
@@ -80,6 +80,12 @@ class NovelMTLTemplate(SearchableSoupTemplate, ChapterOnlySoupTemplate):
                 raise LNException(f"Failed to get page {i + 1}")
             soup = future.result()
             yield from soup.select("ul.chapter-list li a")
+    @sleep_and_retry
+    @limits(calls=1, period=0.7)
+    def download_chapter_body(self, chapter: Chapter) -> str:
+        soup = self.get_soup(chapter.url)
+        body = self.select_chapter_body(soup)
+        return self.parse_chapter_body(body)
 
     def parse_chapter_item(self, tag: Tag, id: int) -> Chapter:
         return Chapter(
