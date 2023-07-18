@@ -7,15 +7,19 @@ from bs4 import BeautifulSoup, Tag
 from ratelimit import limits, sleep_and_retry
 from lncrawl.core.exeptions import LNException
 from lncrawl.models import Chapter, SearchResult
-from lncrawl.templates.soup.chapter_only import ChapterOnlySoupTemplate
-from lncrawl.templates.soup.searchable import SearchableSoupTemplate
+from lncrawl.templates.browser.chapter_only import ChapterOnlyBrowserTemplate
+from lncrawl.templates.browser.searchable import SearchableBrowserTemplate
 
 
-class NovelMTLTemplate(SearchableSoupTemplate, ChapterOnlySoupTemplate):
+
+class NovelMTLTemplate(SearchableBrowserTemplate, ChapterOnlyBrowserTemplate):
     is_template = True
 
     def initialize(self) -> None:
         self.cur_time = int(1000 * time.time())
+
+    def select_search_items_in_browser(self, query: str) -> None:
+        raise LNException("Search in Browser not supported.")
 
     def select_search_items(self, query: str):
         soup = self.get_soup(f"{self.home_url}search.html")
@@ -30,6 +34,14 @@ class NovelMTLTemplate(SearchableSoupTemplate, ChapterOnlySoupTemplate):
 
         soup = self.make_soup(response)
         yield from soup.select("ul.novel-list .novel-item a")
+
+    def visit_novel_page_in_browser(self) -> BeautifulSoup:
+        self.visit(self.novel_url)
+        self.browser.wait(".novel-info")
+
+    def visit_chapter_page_in_browser(self, chapter: Chapter) -> None:
+        self.visit(chapter.url)
+        self.browser.wait(".chapter-content")
 
     def parse_search_item(self, tag: Tag) -> SearchResult:
         title = tag.select_one(".novel-title").text.strip()
