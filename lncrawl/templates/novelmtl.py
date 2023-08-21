@@ -17,6 +17,7 @@ class NovelMTLTemplate(SearchableBrowserTemplate, ChapterOnlyBrowserTemplate):
 
     def initialize(self) -> None:
         self.cur_time = int(1000 * time.time())
+        self.init_executor(ratelimit=1.4)
 
     def select_search_items_in_browser(self, query: str) -> None:
         raise LNException("Search in Browser not supported.")
