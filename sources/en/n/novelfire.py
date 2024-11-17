@@ -14,7 +14,7 @@ class NovelFireCrawler(NovelPubTemplate):
     ]
 
     def initialize(self):
-        self.init_executor(ratelimit=0.5)
+        self.init_executor(ratelimit=1.5)
         self.cleaner.bad_css.update(
             [
                 ".adsbox",
