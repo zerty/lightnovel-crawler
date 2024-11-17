@@ -52,7 +52,11 @@ class BasicBrowserTemplate(Crawler):
         if self.using_browser:
             return
         self._max_workers = self.workers
-        self.init_executor(1)
+        if hasattr(self, "_limiter"):
+            if self._executor._max_workers>1:
+                self.init_executor(1,1/self._limiter.period)
+        else:
+            self.init_executor(1)
         self._browser = Browser(
             headless=self.headless,
             timeout=self.timeout,
