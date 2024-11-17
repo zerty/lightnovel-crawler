@@ -80,12 +80,13 @@ class BasicBrowserTemplate(Crawler):
         try:
             return list(self.search_novel_in_scraper(query))
         except ScraperErrorGroup as e:
-            if logger.isEnabledFor(logging.DEBUG):
-                logger.exception("Failed search novel: %s", e)
-            self.init_browser()
-            return list(self.search_novel_in_browser(query))
-        finally:
-            self.close_browser()
+            pass
+        #     if logger.isEnabledFor(logging.DEBUG):
+        #         logger.exception("Failed search novel: %s", e)
+        #     self.init_browser()
+        #     return list(self.search_novel_in_browser(query))
+        # finally:
+        #     self.close_browser()
 
     def read_novel_info(self) -> None:
         try:
