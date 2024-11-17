@@ -1,24 +1,65 @@
-// Handle key events
-window.addEventListener("keyup", function (evt) {
-  function goToHref(el) {
-    if (!el) return;
-    const href = el.getAttribute("href");
-    if (href === "#") return;
-    window.location.href = href;
-  }
+let keyPressTimer = null;
+let navigationInterval = null;
 
+function goToHref(el) {
+  if (!el) return;
+  const href = el.getAttribute("href");
+  if (href === "#") return;
+  window.location.href = href;
+}
 
-    switch (evt.key) {
-      case "ArrowLeft":
+function startNavigation(direction) {
+  if (direction === "left") {
+    keyPressTimer = setTimeout(() => {
+      navigationInterval = setInterval(() => {
         goToHref(document.querySelector("a.prev-button"));
-        break;
-      case "ArrowRight":
+      }, 50);
+    }, 100);
+  } else if (direction === "right") {
+    keyPressTimer = setTimeout(() => {
+      navigationInterval = setInterval(() => {
         goToHref(document.querySelector("a.next-button"));
-        break;
-      default:
-        break;
-    }
-  });
+      }, 50);
+    }, 100);
+  }
+}
+
+function stopNavigation() {
+  clearTimeout(keyPressTimer);
+  clearInterval(navigationInterval);
+}
+
+window.addEventListener("keydown", function (evt) {
+  switch (evt.key) {
+    case "ArrowLeft":
+      if (!keyPressTimer && !navigationInterval) {
+        startNavigation("left");
+      }
+      break;
+    case "ArrowRight":
+      if (!keyPressTimer && !navigationInterval) {
+        startNavigation("right");
+      }
+      break;
+    default:
+      break;
+  }
+});
+
+window.addEventListener("keyup", function (evt) {
+  stopNavigation();
+  switch (evt.key) {
+    case "ArrowLeft":
+      goToHref(document.querySelector("a.prev-button"));
+      break;
+    case "ArrowRight":
+      goToHref(document.querySelector("a.next-button"));
+      break;
+    default:
+      break;
+  }
+});
+
 
 // Handle next TOC select
 function addTocSelectListener() {
@@ -38,9 +79,8 @@ function debouncedUpdate(evt) {
     var height = document.body.scrollHeight - window.innerHeight + 10;
     var percent = Math.round((100.0 * scroll) / height);
     document.getElementById("readpos").innerText = percent + "%";
-  }, 100);  // 100ms delay
+  }, 100); // 100ms delay
 }
-
 
 window.addEventListener("scroll", debouncedUpdate);
 
