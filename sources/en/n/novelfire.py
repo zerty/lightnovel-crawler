@@ -11,6 +11,7 @@ digit_regex = re.compile(r"page[-,=](\d+)")
 class NovelFireCrawler(NovelPubTemplate):
     base_url = [
         "https://novelfire.net/",
+        "https://novelfire.docsachhay.net/"
     ]
 
     def initialize(self):
